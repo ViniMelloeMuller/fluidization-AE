@@ -7,3 +7,5 @@ Autor: Vinicius Mello e Muller
 Supervisor: Prof. Dr. Flávio Vasconcelos da Silva
 
 Códigos serão disponibilizados quando houver aprovação da banca.
+
+Feito em Python 3.12.5
