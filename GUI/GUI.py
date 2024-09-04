@@ -1,35 +1,36 @@
-import pathlib
 import tkinter as tk
 from tkinter import messagebox, ttk
 
 import matplotlib.pyplot as plt
 import nidaqmx
-import numpy as np
 import pandas as pd
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-                                               NavigationToolbar2Tk)
-from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from nidaqmx.constants import AcquisitionType
 
-plt.style.use("fivethirtyeight")
+plt.style.use("seaborn-v0_8-dark-palette")
 
 
 SENSORES = ["cDAQ1Mod1/ai1", "cDAQ1Mod1/ai2", "cDAQ1Mod1/ai3"]
 
 SAMPLE_RATE = 15  # Taxa de amostragem (Hz)
-UPDATE_INTERVAL = 100  # Intervalo de atualização do gráfico (ms)
+UPDATE_INTERVAL = 30  # Intervalo de atualização do gráfico (ms)
 
 
 class GUI:
     def __init__(self, root, sensores) -> None:
         self.sensores = sensores
+        self.data_buffer = []
         self.plotter = None
 
         self.root = root
         self.root.title("Visualização dos dados de Sensores")
         self.root.geometry("1200x600")
+
         self.root.resizable(0, 0)
+
+        self.root.tk.call("source", "forest-light.tcl")
+        self.style = ttk.Style()
+        self.style.theme_use("forest-light")
 
         self.create_widgets()
 
@@ -76,8 +77,8 @@ class GUI:
         placeholder_label = ttk.Label(self.plot_frame, text="Gráfico será exibido aqui")
         placeholder_label.grid(row=0, column=0, sticky="nsew")
 
-    def test(self) -> None:
-        print(f"Sensores Ativos: {self.sensor_vars.values()}")
+        self.root.columnconfigure(1, weight=1)
+        self.root.rowconfigure(1, weight=1)
 
     def start_plot(self) -> None:
         selected_sensors: list = [
@@ -90,7 +91,7 @@ class GUI:
         for widget in self.plot_frame.winfo_children():
             widget.destroy()
 
-        self.fig, self.ax = plt.subplots(figsize=(8, 6), dpi=50)
+        self.fig, self.ax = plt.subplots(figsize=(8, 6), dpi=100)
         self.xdata: list = []
         self.ydata: dict = {sensor: [] for sensor in selected_sensors}
         self.lines: dict = {
@@ -99,7 +100,7 @@ class GUI:
         }
 
         self.ax.set_xlim(0, 100)
-        self.ax.set_ylim(3, 20)
+        self.ax.set_ylim(3, 25)
         self.ax.set_xlabel("Instante (s)")
         self.ax.set_ylabel("Corrente (mA)")
         self.ax.legend()
@@ -110,7 +111,6 @@ class GUI:
         canvas.get_tk_widget().config(
             width=self.plot_frame.winfo_width(), height=self.plot_frame.winfo_height()
         )
-        # canvas.get_tk_widget().config(
 
         self.plotter = canvas
 
@@ -121,7 +121,7 @@ class GUI:
             self.task.ai_channels.add_ai_current_chan(sensor)
 
         self.task.timing.cfg_samp_clk_timing(
-            SAMPLE_RATE, sample_mode=AcquisitionType.CONTINUOUS, samps_per_chan=1
+            SAMPLE_RATE, sample_mode=AcquisitionType.CONTINUOUS, samps_per_chan=2
         )
 
         self.update_plot()
@@ -130,15 +130,21 @@ class GUI:
         if self.task:
             try:
                 frame: int = len(self.xdata)
-                data = self.task.read(number_of_samples_per_channel=1)
-                self.xdata.append(frame)
-                for i, sensor in enumerate(self.ydata.keys()):
-                    self.ydata[sensor].append(data[i][0] * 1e3)  # Convertendo para mA
+                data = self.task.read(number_of_samples_per_channel=2)
+                # self.xdata.append(frame)
+                for sample_index in range(len(data[0])):
+                    self.xdata.append(frame + sample_index)
+                    for i, sensor in enumerate(self.ydata.keys()):
+                        self.ydata[sensor].append(
+                            data[i][0] * 1e3
+                        )  # Convertendo para mA
 
                 for sensor in self.ydata:
                     self.lines[sensor].set_data(self.xdata, self.ydata[sensor])
 
-                self.ax.set_xlim(max(0, frame - 50), frame)
+                self.ax.set_xlim(
+                    max(0, frame + len(data[0]) - 100), frame + len(data[0])
+                )
                 self.plotter.draw()
 
                 self.root.after(UPDATE_INTERVAL, self.update_plot)
@@ -147,7 +153,6 @@ class GUI:
                 messagebox.showerror(
                     "ERRO", f"Ocorreu um erro durante a coleta de dados: {e}"
                 )
-                self.task.close()
                 self.task = None
 
     def reset_plot(self) -> None:
@@ -157,7 +162,7 @@ class GUI:
             for line in self.lines.values():
                 line.set_data([], [])
             self.ax.set_xlim(0, 100)
-            self.ax.set_ylim(3, 20)
+            self.ax.set_ylim(3, 25)
             self.plotter.draw()
 
     def export_data(self) -> None:
