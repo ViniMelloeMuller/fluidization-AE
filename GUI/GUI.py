@@ -3,6 +3,7 @@ from tkinter import messagebox, ttk
 
 import matplotlib.pyplot as plt
 import nidaqmx
+import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from nidaqmx.constants import AcquisitionType
@@ -10,9 +11,14 @@ from nidaqmx.constants import AcquisitionType
 plt.style.use("seaborn-v0_8-dark-palette")
 
 
-SENSORES = ["cDAQ1Mod1/ai1", "cDAQ1Mod1/ai2", "cDAQ1Mod1/ai3"]
+SENSORES = ["cDAQ1Mod1/ai1", "cDAQ1Mod1/ai3", "cDAQ1Mod1/ai4"]
+SENSORES_LABEL = ["PT103", "FT101", "TT101"]
 
-SAMPLE_RATE = 15  # Taxa de amostragem (Hz)
+# ai1 = PT103
+# ai3 = FT101
+# ai4 = TEMPERATURA
+
+SAMPLE_RATE = 20  # Taxa de amostragem (Hz)
 UPDATE_INTERVAL = 30  # Intervalo de atualização do gráfico (ms)
 
 
@@ -58,7 +64,7 @@ class GUI:
             fill="x", pady=2
         )
 
-        self.filename_entry = ttk.Entry(button_frame)
+        self.filename_entry = ttk.Entry(button_frame, justify="center")
         self.filename_entry.pack(fill="x", pady=2)
         self.filename_entry.insert(0, "teste")  # Valor padrão
 
@@ -101,7 +107,7 @@ class GUI:
 
         self.ax.set_xlim(0, 100)
         self.ax.set_ylim(3, 25)
-        self.ax.set_xlabel("Instante (s)")
+        self.ax.set_xlabel("Frame")
         self.ax.set_ylabel("Corrente (mA)")
         self.ax.legend()
 
