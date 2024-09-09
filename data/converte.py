@@ -17,7 +17,6 @@ TT101 = TT101 * 6250 * 1e-3 - 25
 
 
 # Filtra os dados
-
 PT103_filtered = savgol_filter(PT103, window_length=50, polyorder=4)
 FT101_filtered = savgol_filter(FT101, window_length=50, polyorder=4)
 TT101_filtered = savgol_filter(TT101, window_length=50, polyorder=4)
