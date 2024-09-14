@@ -11,12 +11,14 @@ from nidaqmx.constants import AcquisitionType
 plt.style.use("seaborn-v0_8-dark-palette")
 
 
-SENSORES = ["cDAQ1Mod1/ai1", "cDAQ1Mod1/ai3", "cDAQ1Mod1/ai4"]
-SENSORES_LABEL = ["PT103", "FT101", "TT101"]
+translate = {
+    "cDAQ1Mod1/ai2": "PT105",
+    "cDAQ1Mod1/ai3": "FT101",
+    "cDAQ1Mod1/ai4": "TT101",
+}
 
-# ai1 = PT103
-# ai3 = FT101
-# ai4 = TEMPERATURA
+SENSORES = ["cDAQ1Mod1/ai2", "cDAQ1Mod1/ai3", "cDAQ1Mod1/ai4"]
+SENSORES_LABEL = ["PT105", "FT101", "TT101"]
 
 SAMPLE_RATE = 20  # Taxa de amostragem (Hz)
 UPDATE_INTERVAL = 30  # Intervalo de atualização do gráfico (ms)
@@ -41,6 +43,10 @@ class GUI:
         self.create_widgets()
 
     def create_widgets(self) -> None:
+        """
+        Cria e posiciona os widgets na tela do 
+        sistema
+        """
         sensor_frame = ttk.LabelFrame(
             self.root, text="Selecione os sensores", padding=10
         )
@@ -101,7 +107,7 @@ class GUI:
         self.xdata: list = []
         self.ydata: dict = {sensor: [] for sensor in selected_sensors}
         self.lines: dict = {
-            sensor: self.ax.plot([], [], lw=2, label=sensor)[0]
+            sensor: self.ax.plot([], [], lw=2, label=translate[sensor])[0]
             for sensor in selected_sensors
         }
 
@@ -133,6 +139,10 @@ class GUI:
         self.update_plot()
 
     def update_plot(self) -> None:
+        """
+        Essa função é usada para atualizar o gráfico
+        a cada instante
+        """
         if self.task:
             try:
                 frame: int = len(self.xdata)
