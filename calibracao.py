@@ -25,12 +25,8 @@ def fit_and_plot(filename: str) -> None:
 
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
 
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
     ax.plot(x, a * x + b, ls="--", c="grey")
     ax.scatter(x, y, marker="s", c="k")
-    ax.grid()
 
     textstr = "\n".join(
         (
