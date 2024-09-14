@@ -1,3 +1,4 @@
 *.pdf
 TODO.md
 .DS_Store
+.ipynb_checkpoints

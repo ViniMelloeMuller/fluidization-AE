@@ -2,7 +2,14 @@ import numpy as np
 from sklearn.metrics import r2_score
 import pandas as pd
 import matplotlib.pyplot as plt
+import scienceplots
 
+
+plt.style.use(["science", "ieee", "notebook"])
+
+plt.rcParams["font.size"] = 12
+plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["figure.figsize"] = (9, 4)
 
 def fit_and_plot(filename: str) -> None:
     """
