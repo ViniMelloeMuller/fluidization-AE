@@ -43,6 +43,8 @@ def fit_and_plot(filename: str) -> None:
     ax.set_ylabel("Pressão (kPa)")
 
     plt.savefig(f"images/{filename}.pdf", dpi=300, bbox_inches="tight")
+    
+    print(f"SENSOR: {filename}\tAjuste: y = {a:.3f}*x + {b:.3f}")
 
     return
 
