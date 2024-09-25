@@ -28,7 +28,7 @@ def fit_and_plot(filename: str) -> None:
     ax.plot(x, a * x + b, ls="--", c="grey")
     ax.scatter(x, y, marker="s", c="k")
 
-    textstr = "\n".join(
+    textstr: str = "\n".join(
         (
             rf"$(-\Delta P)$ = {a:.2f}$i$ + {b:.2f}",
             f"$R^2$ = {r2_score(y, a*x + b):.4f}",
@@ -46,7 +46,7 @@ def fit_and_plot(filename: str) -> None:
     
     print(f"SENSOR: {filename}\tAjuste: y = {a:.3f}*x + {b:.3f}")
 
-    return
+    return a, b
 
 
 fit_and_plot("FT101")
