@@ -5,3 +5,4 @@ TODO.md
 /venv/
 .idea
 *.keras
+__pychache__/
