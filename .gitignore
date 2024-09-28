@@ -4,3 +4,4 @@ TODO.md
 .ipynb_checkpoints
 /venv/
 .idea
+*.keras
