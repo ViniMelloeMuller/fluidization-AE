@@ -141,8 +141,3 @@ class MinMaxScaler_AE:
 
     def inverse_transform(self, X_scaled: np.ndarray) -> np.ndarray:
         return X_scaled * (self.max_val - self.min_val) + self.min_val
-
-
-if __name__ == "__main__":
-    TF_ENABLE_ONEDNN_OPTS = 0
-    print("Hellooooo!")
