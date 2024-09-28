@@ -1,15 +1,15 @@
-import numpy as np
-from sklearn.metrics import r2_score
-import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import scienceplots
-
+from sklearn.metrics import r2_score
 
 plt.style.use(["science", "ieee", "notebook"])
 
 plt.rcParams["font.size"] = 12
 plt.rcParams["font.family"] = "Times New Roman"
 plt.rcParams["figure.figsize"] = (9, 4)
+
 
 def fit_and_plot(filename: str) -> None:
     """
@@ -43,7 +43,7 @@ def fit_and_plot(filename: str) -> None:
     ax.set_ylabel("Pressão (kPa)")
 
     plt.savefig(f"images/{filename}.pdf", dpi=300, bbox_inches="tight")
-    
+
     print(f"SENSOR: {filename}\tAjuste: y = {a:.3f}*x + {b:.3f}")
 
     return a, b

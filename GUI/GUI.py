@@ -44,7 +44,7 @@ class GUI:
 
     def create_widgets(self) -> None:
         """
-        Cria e posiciona os widgets na tela do 
+        Cria e posiciona os widgets na tela do
         sistema
         """
         sensor_frame = ttk.LabelFrame(
