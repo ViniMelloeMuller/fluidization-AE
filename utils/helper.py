@@ -95,7 +95,7 @@ class Calibrator:
         self.data: dict = {}
         for filename in files:
             df = pd.read_csv(
-                f"data/calibracao/{filename}.csv", delimiter=",", decimal=","
+                f"data/CALIBRACAO/{filename}.csv", delimiter=",", decimal=","
             )
             x, y = df.iloc[:, 0], df.iloc[:, 1]
             self.a, self.b = np.polyfit(x, y, 1)
