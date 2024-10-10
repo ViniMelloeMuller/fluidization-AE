@@ -30,7 +30,8 @@ def folder_to_sequence(folder_path: str, window_size: int) -> np.ndarray:
         if filename.endswith(".csv"):
             df_old = pd.read_csv("data/" + folder_path + "/" + filename)
             df = calibrator.apply_calibration(df_old)
-            sequences = df_to_sequence(df.PT105, window_size)
+            df = calibrator.get_corrected_dp(df)
+            sequences = df_to_sequence(df.PT105_corrected, window_size)
             if X is None:
                 X = sequences
             else:
@@ -91,7 +92,7 @@ def train_test_split_ae(
 
 class Calibrator:
     def __init__(self):
-        files = ["PT105"]
+        files = ["PT105", "FT101"]
         self.data: dict = {}
         for filename in files:
             df = pd.read_csv(
@@ -105,8 +106,35 @@ class Calibrator:
         return str(self.data)
 
     def apply_calibration(self, df: pd.DataFrame) -> pd.DataFrame:
-        df["PT105"] = self.a * df["cDAQ1Mod1/ai2"] + self.b
+        df["PT105"] = self.data["PT105"][0] * df["cDAQ1Mod1/ai2"] + self.data["PT105"][1]
+        df["FT101"] = self.data["FT101"][0] * df["cDAQ1Mod1/ai3"] + self.data["FT101"][1]
         return df
+
+    def get_corrected_dp(self, df_calibrated: pd.DataFrame) -> pd.DataFrame:
+        """ Função que ajusta os dados do pt105 no leito vazio
+        em relação ao ft101 e retorna os coeficientes do ajuste. 
+        
+        Returns:
+            O dataframe ajustado com os valores corrigidos.
+        """
+        pt105_means = []
+        ft101_means = []
+
+        for filename in os.listdir("data/VAZIO"):
+            if filename.endswith(".csv"):
+                df = pd.read_csv("data/VAZIO/"+filename)
+                df = self.apply_calibration(df)
+                pt105_means.append(df["PT105"].mean())
+                ft101_means.append(df["FT101"].mean())
+
+        pt105_means = np.array(pt105_means)
+        ft101_means = np.array(ft101_means)
+
+        a, b, c = np.polyfit(ft101_means, pt105_means, 2)
+
+        df_calibrated["PT105_corrected"] = df_calibrated["PT105"] - (a * df_calibrated["FT101"] ** 2 + b * df_calibrated["FT101"] + c)
+
+        return df_calibrated
 
 
 class MinMaxScaler_AE:
