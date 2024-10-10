@@ -8,6 +8,8 @@ dependencies = [
     "ipykernel>=6.29.5",
     "matplotlib-inline>=0.1.7",
     "matplotlib>=3.9.2",
+    "neptune-tensorflow-keras>=2.2.2",
+    "neptune>=1.12.0",
     "nidaqmx>=1.0.1",
     "numpy<2",
     "pandas>=2.2.3",
