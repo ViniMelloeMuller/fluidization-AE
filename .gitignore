@@ -7,3 +7,4 @@ TODO.md
 *.keras
 __pycache__/
 uv.lock
+.neptune/
