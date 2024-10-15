@@ -106,14 +106,18 @@ class Calibrator:
         return str(self.data)
 
     def apply_calibration(self, df: pd.DataFrame) -> pd.DataFrame:
-        df["PT105"] = self.data["PT105"][0] * df["cDAQ1Mod1/ai2"] + self.data["PT105"][1]
-        df["FT101"] = self.data["FT101"][0] * df["cDAQ1Mod1/ai3"] + self.data["FT101"][1]
+        df["PT105"] = (
+            self.data["PT105"][0] * df["cDAQ1Mod1/ai2"] + self.data["PT105"][1]
+        )
+        df["FT101"] = (
+            self.data["FT101"][0] * df["cDAQ1Mod1/ai3"] + self.data["FT101"][1]
+        )
         return df
 
     def get_corrected_dp(self, df_calibrated: pd.DataFrame) -> pd.DataFrame:
-        """ Função que ajusta os dados do pt105 no leito vazio
-        em relação ao ft101 e retorna os coeficientes do ajuste. 
-        
+        """Função que ajusta os dados do pt105 no leito vazio
+        em relação ao ft101 e retorna os coeficientes do ajuste.
+
         Returns:
             O dataframe ajustado com os valores corrigidos.
         """
@@ -122,7 +126,7 @@ class Calibrator:
 
         for filename in os.listdir("data/VAZIO"):
             if filename.endswith(".csv"):
-                df = pd.read_csv("data/VAZIO/"+filename)
+                df = pd.read_csv("data/VAZIO/" + filename)
                 df = self.apply_calibration(df)
                 pt105_means.append(df["PT105"].mean())
                 ft101_means.append(df["FT101"].mean())
@@ -132,7 +136,9 @@ class Calibrator:
 
         a, b, c = np.polyfit(ft101_means, pt105_means, 2)
 
-        df_calibrated["PT105_corrected"] = df_calibrated["PT105"] - (a * df_calibrated["FT101"] ** 2 + b * df_calibrated["FT101"] + c)
+        df_calibrated["PT105_corrected"] = df_calibrated["PT105"] - (
+            a * df_calibrated["FT101"] ** 2 + b * df_calibrated["FT101"] + c
+        )
 
         return df_calibrated
 

@@ -51,13 +51,14 @@ def fit_and_plot(filename: str) -> tuple[float, float]:
 
     return a, b
 
+
 def get_corrected_dp():
     calibrator = Calibrator()
     pt105_medias = []
     ft101_medias = []
     for filename in os.listdir("data/VAZIO"):
         if filename.endswith(".csv"):
-            df = pd.read_csv("data/VAZIO/"+filename)
+            df = pd.read_csv("data/VAZIO/" + filename)
             df = calibrator.apply_calibration(df)
             pt105_medias.append(df["PT105"].mean())
             ft101_medias.append(df["FT101"].mean())
@@ -69,7 +70,7 @@ def get_corrected_dp():
 
     fig, ax = plt.subplots(1, 1, figsize=(4, 4))
     ax.scatter(ft101_medias, pt105_medias)
-    ax.plot(ft101_medias, a*ft101_medias**2 + b*ft101_medias + c, c="r")
+    ax.plot(ft101_medias, a * ft101_medias**2 + b * ft101_medias + c, c="r")
     ax.set_xlabel("FT101 (kPa)")
     ax.set_ylabel("PT105 no leito vazio (kPa)")
 
