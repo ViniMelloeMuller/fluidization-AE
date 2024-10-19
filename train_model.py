@@ -27,8 +27,8 @@ from keras.layers import (
 )
 
 PARAMETERS = {
-    "window_size": 20,
-    "n": 100,
+    "window_size": 60,
+    "n": 120,
     "dr": 0.20,
     "l1": 0.00001,
     "l2": 0.00001,
@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
     callbacks = [
         keras.callbacks.ModelCheckpoint(
-            "best_model.keras",
+            "models/best_model.keras",
             save_best_only=True,
             monitor="val_loss",
         ),
