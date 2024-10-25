@@ -40,12 +40,10 @@ def folder_to_sequence(folder_path: str, window_size: int) -> np.ndarray:
 
 
 def df_to_sequence(data: pd.DataFrame, window_size: int) -> np.ndarray:
-    x = []
-    for i in range(len(data) - window_size):
-        row = [[r] for r in data[i : i + window_size]]
-        x.append(row)
+    data_array = data.values
+    sequences = np.lib.stride_tricks.sliding_window_view(data_array, window_shape=(window_size, data_array.shape[1]))
 
-    return np.array(x)
+    return sequences.reshape(-1, window_size, data_array.shape[1])
 
 
 def train_test_split_ae(
