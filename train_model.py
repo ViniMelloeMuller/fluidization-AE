@@ -6,7 +6,7 @@ from tensorflow import keras
 from tensorflow.python.util.lazy_loader import KerasLazyLoader
 from tqdm import tqdm
 
-from utils.helper import (
+from notebooks.utils.helper import (
     folder_to_sequence,
     df_to_sequence,
     Calibrator,
@@ -27,11 +27,11 @@ from keras.layers import (
 )
 
 PARAMETERS = {
-    "window_size": 60,
-    "n": 120,
-    "dr": 0.20,
-    "l1": 0.00001,
-    "l2": 0.00001,
+    "window_size": 20,
+    "n": 100,
+    "dr": 0.25,
+    "l1": 0.0001,
+    "l2": 0.0001,
 }
 
 
@@ -105,9 +105,9 @@ if __name__ == "__main__":
             monitor="val_loss",
         ),
         keras.callbacks.ReduceLROnPlateau(
-            monitor="val_loss", factor=0.5, patience=20, min_lr=1e-5
+            monitor="val_loss", factor=0.5, patience=15, min_lr=1e-5
         ),
-        keras.callbacks.EarlyStopping(monitor="val_loss", patience=40, verbose=1),
+        keras.callbacks.EarlyStopping(monitor="val_loss", patience=20, verbose=1),
     ]
 
     autoencoder.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-3), loss="mse")
