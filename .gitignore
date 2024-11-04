@@ -4,7 +4,7 @@ TODO.md
 .ipynb_checkpoints
 /venv/
 .idea
-*.keras
 __pycache__/
 uv.lock
 .neptune/
+images/

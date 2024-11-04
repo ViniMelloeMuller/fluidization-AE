@@ -41,7 +41,9 @@ def folder_to_sequence(folder_path: str, window_size: int) -> np.ndarray:
 
 def df_to_sequence(data: pd.DataFrame, window_size: int) -> np.ndarray:
     data_array = data.values.reshape(-1, 1)
-    sequences = np.lib.stride_tricks.sliding_window_view(data_array, window_shape=(window_size, 1))
+    sequences = np.lib.stride_tricks.sliding_window_view(
+        data_array, window_shape=(window_size, 1)
+    )
 
     return sequences.reshape(-1, window_size, 1)
 
