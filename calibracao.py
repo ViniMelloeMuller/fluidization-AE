@@ -5,7 +5,9 @@ import scienceplots
 from sklearn.metrics import r2_score
 import os
 
-from utils.helper import Calibrator
+import sys
+sys.path.append("notebooks/utils")
+from helper import Calibrator
 
 plt.style.use(["science", "ieee", "notebook"])
 
@@ -68,12 +70,13 @@ def get_corrected_dp():
 
     a, b, c = np.polyfit(ft101_medias, pt105_medias, 2)
 
-    fig, ax = plt.subplots(1, 1, figsize=(4, 4))
-    ax.scatter(ft101_medias, pt105_medias)
-    ax.plot(ft101_medias, a * ft101_medias**2 + b * ft101_medias + c, c="r")
+    fig, ax = plt.subplots(1, 1, figsize=(12, 4))
+    ax.plot(ft101_medias, a * ft101_medias**2 + b * ft101_medias + c, c="r", label=f"y = {a:.2f}x² + {b:.2f}x + {c:.2f}")
+    ax.scatter(ft101_medias, pt105_medias, label="Média dos pontos")
     ax.set_xlabel("FT101 (kPa)")
-    ax.set_ylabel("PT105 no leito vazio (kPa)")
+    ax.set_ylabel("PT105 coluna vazia (kPa)")
 
+    plt.legend()
     plt.savefig("images/ajuste-vazio.pdf", dpi=300, bbox_inches="tight")
     print(a, b, c)
     return None
