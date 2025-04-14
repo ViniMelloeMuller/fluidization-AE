@@ -4,10 +4,12 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def folder_to_sequence(folder_path: str, window_size: int) -> np.ndarray:
+def folder_to_sequence(
+    folder_path: str, window_size: int
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Função usada para converter os dados .csv de uma pasta
-    para o formato aceito pelo autocodificador LSTM.
+    para o formato aceito pelo modelo FT101 -> PT105
 
     Parameters
     ----------
@@ -19,11 +21,11 @@ def folder_to_sequence(folder_path: str, window_size: int) -> np.ndarray:
 
     Returns
     -------
-    np.ndarray
-        Array contendo as sequencias na forma de sequencias
+        Arrays contendo as sequencias X (velocidade) e Y (pressão)
     """
 
     X = None
+    Y = None
 
     calibrator = Calibrator()
     for filename in tqdm(os.listdir("data/" + folder_path)):
@@ -31,12 +33,16 @@ def folder_to_sequence(folder_path: str, window_size: int) -> np.ndarray:
             df_old = pd.read_csv("data/" + folder_path + "/" + filename)
             df = calibrator.apply_calibration(df_old)
             df = calibrator.get_corrected_dp(df)
-            sequences = df_to_sequence(df.PT105_corrected, window_size)
+
+            pt_sequences = df_to_sequence(df.PT105_corrected, window_size)
+            ft_sequences = df_to_sequence(df.FT101, window_size)
+
             if X is None:
-                X = sequences
+                X, Y = ft_sequences, pt_sequences
             else:
-                X = np.concatenate((X, sequences))
-    return X
+                X = np.concatenate((X, ft_sequences))
+                Y = np.concatenate((Y, pt_sequences))
+    return X, Y
 
 
 def df_to_sequence(data: pd.DataFrame, window_size: int) -> np.ndarray:
