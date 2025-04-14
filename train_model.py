@@ -85,16 +85,25 @@ if __name__ == "__main__":
     plt.rcParams["font.family"] = "Times New Roman"
     plt.rcParams["figure.figsize"] = (9, 4)
 
-    calibrator = Calibrator()
     scaler = MinMaxScaler_AE()
 
     window_size = PARAMETERS["window_size"]
-    bigX = folder_to_sequence("VIDRO-B3", window_size=window_size)
+    X, Y = folder_to_sequence("VIDRO-B3", window_size=window_size)
 
-    Xtrain, Xval = train_test_split_ae(bigX)
-    scaler.fit(bigX)
+    n_samples = X.shape[0]
+    idx = np.random.permutation(n_samples)
+    test_size = int(n_samples * 0.25)
+    Xtrain, Xval = X[idx[test_size:]], X[idx[:test_size]]
+    Ytrain, Yval = Y[idx[test_size:]], Y[idx[:test_size]]
 
-    Xtrain_N, Xval_N = scaler.transform(Xtrain), scaler.transform(Xval)
+    scalerX = MinMaxScaler_AE()
+    scalerY = MinMaxScaler_AE()
+
+    scalerX.fit(Xtrain)
+    scalerY.fit(Ytrain)
+
+    Xtrain_N, Xval_N = scalerX.transform(Xtrain), scalerX.transform(Xval)
+    Ytrain_N, Yval_N = scalerY.transform(Ytrain), scalerY.transform(Yval)
 
     autoencoder = create_model(PARAMETERS)
 
@@ -114,8 +123,8 @@ if __name__ == "__main__":
 
     history = autoencoder.fit(
         Xtrain_N,
-        Xtrain_N,
-        validation_data=(Xval_N, Xval_N),
+        Ytrain_N,
+        validation_data=(Xval_N, Yval_N),
         epochs=500,
         batch_size=64,
         shuffle=True,
@@ -124,7 +133,6 @@ if __name__ == "__main__":
 
     loss = history.history["loss"]
     val_loss = history.history["val_loss"]
-
     epochs = np.arange(1, len(loss) + 1)
 
     plt.yscale("log", base=10)
