@@ -28,9 +28,9 @@ def folder_to_sequence(
     Y = None
 
     calibrator = Calibrator()
-    for filename in tqdm(os.listdir("data/" + folder_path)):
+    for filename in tqdm(os.listdir("../data/" + folder_path)):
         if filename.endswith(".csv"):
-            df_old = pd.read_csv("data/" + folder_path + "/" + filename)
+            df_old = pd.read_csv("../data/" + folder_path + "/" + filename)
             df = calibrator.apply_calibration(df_old)
             df = calibrator.get_corrected_dp(df)
 
@@ -102,7 +102,7 @@ class Calibrator:
         self.data: dict = {}
         for filename in files:
             df = pd.read_csv(
-                f"data/CALIBRACAO/{filename}.csv", delimiter=",", decimal=","
+                f"../data/CALIBRACAO/{filename}.csv", delimiter=",", decimal=","
             )
             x, y = df.iloc[:, 0], df.iloc[:, 1]
             self.a, self.b = np.polyfit(x, y, 1)
@@ -130,9 +130,9 @@ class Calibrator:
         pt105_means = []
         ft101_means = []
 
-        for filename in os.listdir("data/VAZIO"):
+        for filename in os.listdir("../data/VAZIO"):
             if filename.endswith(".csv"):
-                df = pd.read_csv("data/VAZIO/" + filename)
+                df = pd.read_csv("../data/VAZIO/" + filename)
                 df = self.apply_calibration(df)
                 pt105_means.append(df["PT105"].mean())
                 ft101_means.append(df["FT101"].mean())
