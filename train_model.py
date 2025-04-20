@@ -20,7 +20,6 @@ from keras.layers import (
     Dense,
     LSTM,
     Input,
-    RepeatVector,
     TimeDistributed,
     Flatten,
     Dropout,
@@ -41,25 +40,13 @@ def create_model(PARAMETERS: dict) -> keras.Model:
     l1: float = PARAMETERS["l1"]
     l2: float = PARAMETERS["l2"]
 
-    autoencoder = Sequential(
+    seq2seq = Sequential(
         [
             Input(
                 (PARAMETERS["window_size"], 1)
             ),  # Indica que as séries temporais são de apenas uma feature
             LSTM(
                 n,
-                return_sequences=True,
-                kernel_regularizer=l1_l2(l1=l1, l2=l2),
-            ),
-            Dropout(dr),
-            LSTM(
-                n // 2,
-                return_sequences=False,
-                kernel_regularizer=l1_l2(l1=l1, l2=l2),
-            ),
-            RepeatVector(window_size),
-            LSTM(
-                n // 2,
                 return_sequences=True,
                 kernel_regularizer=l1_l2(l1=l1, l2=l2),
             ),
@@ -75,10 +62,11 @@ def create_model(PARAMETERS: dict) -> keras.Model:
             Flatten(),
         ]
     )
-    return autoencoder
+    return seq2seq
 
 
 if __name__ == "__main__":
+    np.random.seed(50)  # 50 anos da faculdade de engenharia química FEQ UNICAMP :)
     plt.style.use(["science", "ieee", "notebook"])
 
     plt.rcParams["font.size"] = 12
@@ -105,7 +93,7 @@ if __name__ == "__main__":
     Xtrain_N, Xval_N = scalerX.transform(Xtrain), scalerX.transform(Xval)
     Ytrain_N, Yval_N = scalerY.transform(Ytrain), scalerY.transform(Yval)
 
-    autoencoder = create_model(PARAMETERS)
+    seq2seq = create_model(PARAMETERS)
 
     callbacks = [
         keras.callbacks.ModelCheckpoint(
@@ -119,9 +107,10 @@ if __name__ == "__main__":
         keras.callbacks.EarlyStopping(monitor="val_loss", patience=20, verbose=1),
     ]
 
-    autoencoder.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-3), loss="mse")
+    seq2seq.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-3), loss="mse")
 
-    history = autoencoder.fit(
+    print(seq2seq.summary())
+    history = seq2seq.fit(
         Xtrain_N,
         Ytrain_N,
         validation_data=(Xval_N, Yval_N),
@@ -146,5 +135,5 @@ if __name__ == "__main__":
     plt.xlim((0, len(loss)))
     plt.legend()
 
-    plt.savefig("images/curva-de-aprendizdo.pdf", dpi=300, bbox_inches="tight")
+    plt.savefig("../images/curva-de-aprendizdo.pdf", dpi=300, bbox_inches="tight")
     plt.show()
