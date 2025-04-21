@@ -27,7 +27,7 @@ from keras.layers import (
 
 PARAMETERS = {
     "window_size": 20,
-    "n": 100,
+    "n": 40,
     "dr": 0.25,
     "l1": 0.0001,
     "l2": 0.0001,
@@ -87,8 +87,8 @@ if __name__ == "__main__":
     scalerX = MinMaxScaler_AE()
     scalerY = MinMaxScaler_AE()
 
-    scalerX.fit(Xtrain)
-    scalerY.fit(Ytrain)
+    scalerX.fit(X)
+    scalerY.fit(Y)
 
     Xtrain_N, Xval_N = scalerX.transform(Xtrain), scalerX.transform(Xval)
     Ytrain_N, Yval_N = scalerY.transform(Ytrain), scalerY.transform(Yval)
@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     callbacks = [
         keras.callbacks.ModelCheckpoint(
-            "models/best_model.keras",
+            "../models/best_model.keras",
             save_best_only=True,
             monitor="val_loss",
         ),
