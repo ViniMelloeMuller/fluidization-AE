@@ -5,6 +5,5 @@ TODO.md
 /venv/
 .idea
 __pycache__/
-uv.lock
 .neptune/
 images/
