@@ -97,7 +97,7 @@ def objective(trial: Trial, x_train, y_train, x_val, y_val) -> float:
         batch_size=64,
         shuffle=True,
         callbacks=callbacks,
-        verbose=0,
+        verbose=1,
     )
 
     val_loss = seq2seq.evaluate(Xval_N, Yval_N, verbose=0)
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         study.optimize(
             lambda trial: objective(trial, Xtrain_N, Ytrain_N, Xval_N, Yval_N),
             n_trials=10,
-            n_jobs=-1,
+            n_jobs=1,
             timeout=600,
         )
     except KeyboardInterrupt:
