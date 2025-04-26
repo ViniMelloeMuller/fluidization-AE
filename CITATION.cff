@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Se usar os dados ou o código desse repositório, por favor cite como abaixo."
+authors:
+- family-names: "Muller"
+  given-names: "Vinicius"
+  orcid: "https://orcid.org/0000-0002-6884-255X"
+title: "Detecção de Anomalias em Leitos Fluidizados utilizando Redes LSTM"
+version: 2.0.0
+doi: 10.5281/zenodo.15288363
+date-released: 2025-04-26
+url: "https://github.com/ViniMelloeMuller/fluidization-AE"
